@@ -5,6 +5,13 @@
  */
 package golfscorecalculator;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -59,6 +66,8 @@ public class GolfScoreCalculator extends Application {
     private ToggleGroup coreValuesToggleGroup;
     private RadioButton coreValuesOverallRadioButton;
     private RadioButton coreValuesCategoryRadioButton;
+    
+    private static ArrayList<Team> teams;
     
     @Override
     public void start(Stage primaryStage) {
@@ -115,7 +124,7 @@ public class GolfScoreCalculator extends Application {
         inspirationVBox = new RankingVBox("Inspiration");
         teamworkVBox = new RankingVBox("Teamwork");
         graciousProfessionalismVBox = new RankingVBox("Gracious Professionalism");
-        coreValuesLabel = new Label("Project");
+        coreValuesLabel = new Label("Core Values");
         coreValuesRadioButtonHBox = new HBox();
         coreValuesToggleGroup = new ToggleGroup();
         coreValuesToggleGroup.selectedToggleProperty().addListener(toggleHandler);
@@ -138,17 +147,21 @@ public class GolfScoreCalculator extends Application {
         HBox rankingHBox = new HBox();
         rankingHBox.getChildren().addAll(robotDesignGridPane, projectGridPane, coreValuesGridPane);
         
+        CommandButtonHandler commandButtonHandler = new CommandButtonHandler();
         HBox commandHBox = new HBox();
         Button calculateButton = new Button("Calculate");
+        calculateButton.setOnAction(commandButtonHandler);
         Button exitButton = new Button("Exit");
+        exitButton.setOnAction(commandButtonHandler);
         commandHBox.getChildren().addAll(calculateButton, exitButton);
         
         BorderPane root = new BorderPane();
         root.setCenter(rankingHBox);
+        root.setBottom(commandHBox);
         
         Scene scene = new Scene(root, 300, 250);
         
-        primaryStage.setTitle("Hello World!");
+        primaryStage.setTitle("Golf Score Calculator");
         primaryStage.setScene(scene);
         primaryStage.show();
     }
@@ -195,7 +208,22 @@ public class GolfScoreCalculator extends Application {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+        teams = new ArrayList<>();
+        readTeams(args[0]);
         launch(args);
+    }
+    
+    private static void readTeams(String filename) {
+        try {
+            Scanner reader = new Scanner(new File(filename));
+            while(reader.hasNext()) {
+                Team newTeam = new Team(Integer.parseInt(reader.nextLine().trim()));
+                teams.add(newTeam);
+            }
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(GolfScoreCalculator.class.getName()).log(Level.SEVERE, null, ex);
+            System.err.println("Unable to find team input file");
+        }
     }
     
     private class ToggleHandler implements ChangeListener<Toggle> {
@@ -213,11 +241,137 @@ public class GolfScoreCalculator extends Application {
         public void handle(ActionEvent event) {
             Button pressed = (Button) event.getSource();
             if(pressed.getText().equals("Calculate")) {
-                //TODO: Make the magic happen
+                calculateRobotDesign();
+                calculateProject();
+                calculateCoreValues();
+                Collections.sort(teams);
+                ResultsView resultsView = new ResultsView(teams);
             } else if(pressed.getText().equals("Exit")) {
                 System.exit(0);
             }
         }
         
+        private void calculateRobotDesign() {
+            if(robotDesignOverallRadioButton.isSelected()) {
+                for(int i = 0; i < teams.size(); i++) {
+                    int rank = findTeamRank(teams.get(i), robotDesignVBox);
+                    if(rank < 0) {
+                        teams.get(i).addScore(robotDesignVBox.getNumTeamFields() * 3);
+                    } else {
+                        teams.get(i).addScore(rank * 3);
+                    }
+                }
+            } else {
+                for(int i = 0; i < teams.size(); i++) {
+                    int rank = findTeamRank(teams.get(i), mechanicalDesignVBox);
+                    if(rank < 0) {
+                        teams.get(i).addScore(mechanicalDesignVBox.getNumTeamFields());
+                    } else {
+                        teams.get(i).addScore(rank);
+                    }
+                }
+                for(int i = 0; i < teams.size(); i++) {
+                    int rank = findTeamRank(teams.get(i), softwareVBox);
+                    if(rank < 0) {
+                        teams.get(i).addScore(softwareVBox.getNumTeamFields());
+                    } else {
+                        teams.get(i).addScore(rank);
+                    }
+                }
+                for(int i = 0; i < teams.size(); i++) {
+                    int rank = findTeamRank(teams.get(i), strategyAndInnovationVBox);
+                    if(rank < 0) {
+                        teams.get(i).addScore(strategyAndInnovationVBox.getNumTeamFields());
+                    } else {
+                        teams.get(i).addScore(rank);
+                    }
+                }
+            }
+        }
+        
+        private void calculateProject() {
+            if(projectOverallRadioButton.isSelected()) {
+                for(int i = 0; i < teams.size(); i++) {
+                    int rank = findTeamRank(teams.get(i), projectVBox);
+                    if(rank < 0) {
+                        teams.get(i).addScore(projectVBox.getNumTeamFields() * 3);
+                    } else {
+                        teams.get(i).addScore(rank * 3);
+                    }
+                }
+            } else {
+                for(int i = 0; i < teams.size(); i++) {
+                    int rank = findTeamRank(teams.get(i), researchVBox);
+                    if(rank < 0) {
+                        teams.get(i).addScore(researchVBox.getNumTeamFields());
+                    } else {
+                        teams.get(i).addScore(rank);
+                    }
+                }
+                for(int i = 0; i < teams.size(); i++) {
+                    int rank = findTeamRank(teams.get(i), innovativeSolutionVBox);
+                    if(rank < 0) {
+                        teams.get(i).addScore(innovativeSolutionVBox.getNumTeamFields());
+                    } else {
+                        teams.get(i).addScore(rank);
+                    }
+                }
+                for(int i = 0; i < teams.size(); i++) {
+                    int rank = findTeamRank(teams.get(i), presentationVBox);
+                    if(rank < 0) {
+                        teams.get(i).addScore(presentationVBox.getNumTeamFields());
+                    } else {
+                        teams.get(i).addScore(rank);
+                    }
+                }
+            }
+        }
+        
+        private void calculateCoreValues() {
+            if(coreValuesOverallRadioButton.isSelected()) {
+                for(int i = 0; i < teams.size(); i++) {
+                    int rank = findTeamRank(teams.get(i), coreValuesVBox);
+                    if(rank < 0) {
+                        teams.get(i).addScore(coreValuesVBox.getNumTeamFields() * 3);
+                    } else {
+                        teams.get(i).addScore(rank * 3);
+                    }
+                }
+            } else {
+                for(int i = 0; i < teams.size(); i++) {
+                    int rank = findTeamRank(teams.get(i), inspirationVBox);
+                    if(rank < 0) {
+                        teams.get(i).addScore(inspirationVBox.getNumTeamFields());
+                    } else {
+                        teams.get(i).addScore(rank);
+                    }
+                }
+                for(int i = 0; i < teams.size(); i++) {
+                    int rank = findTeamRank(teams.get(i), teamworkVBox);
+                    if(rank < 0) {
+                        teams.get(i).addScore(teamworkVBox.getNumTeamFields());
+                    } else {
+                        teams.get(i).addScore(rank);
+                    }
+                }
+                for(int i = 0; i < teams.size(); i++) {
+                    int rank = findTeamRank(teams.get(i), graciousProfessionalismVBox);
+                    if(rank < 0) {
+                        teams.get(i).addScore(graciousProfessionalismVBox.getNumTeamFields());
+                    } else {
+                        teams.get(i).addScore(rank);
+                    }
+                }
+            }
+        }
+        
+        private int findTeamRank(Team team, RankingVBox rankingVBox) {
+            for(int i = 0; i < rankingVBox.getNumTeamFields(); i++) {
+                if(team.getTeamNumber() == Integer.parseInt(rankingVBox.getTeamField(i).getText().trim())) {
+                    return i;
+                }
+            }
+            return -1;
+        }
     }
 }
