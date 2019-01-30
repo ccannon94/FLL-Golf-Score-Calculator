@@ -7,6 +7,7 @@ package golfscorecalculator;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Scanner;
@@ -26,6 +27,7 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 /**
@@ -33,7 +35,7 @@ import javafx.stage.Stage;
  * @author CCannon
  */
 public class GolfScoreCalculator extends Application {
-    
+
     private GridPane robotDesignGridPane;
     private RankingVBox robotDesignVBox;
     private RankingVBox mechanicalDesignVBox;
@@ -44,7 +46,7 @@ public class GolfScoreCalculator extends Application {
     private ToggleGroup robotDesignToggleGroup;
     private RadioButton robotDesignOverallRadioButton;
     private RadioButton robotDesignCategoryRadioButton;
-    
+
     private GridPane projectGridPane;
     private RankingVBox projectVBox;
     private RankingVBox researchVBox;
@@ -55,7 +57,7 @@ public class GolfScoreCalculator extends Application {
     private ToggleGroup projectToggleGroup;
     private RadioButton projectOverallRadioButton;
     private RadioButton projectCategoryRadioButton;
-    
+
     private GridPane coreValuesGridPane;
     private RankingVBox coreValuesVBox;
     private RankingVBox inspirationVBox;
@@ -66,13 +68,13 @@ public class GolfScoreCalculator extends Application {
     private ToggleGroup coreValuesToggleGroup;
     private RadioButton coreValuesOverallRadioButton;
     private RadioButton coreValuesCategoryRadioButton;
-    
+
     private static ArrayList<Team> teams;
-    
+
     @Override
     public void start(Stage primaryStage) {
         ToggleHandler toggleHandler = new ToggleHandler();
-        
+
         robotDesignGridPane = new GridPane();
         robotDesignVBox = new RankingVBox("");
         mechanicalDesignVBox = new RankingVBox("Mechanical Deign");
@@ -95,7 +97,7 @@ public class GolfScoreCalculator extends Application {
         robotDesignGridPane.add(mechanicalDesignVBox, 1, 2);
         robotDesignGridPane.add(softwareVBox, 2, 2);
         robotDesignGridPane.add(strategyAndInnovationVBox, 3, 2);
-        
+
         projectGridPane = new GridPane();
         projectVBox = new RankingVBox("");
         researchVBox = new RankingVBox("Research");
@@ -117,8 +119,8 @@ public class GolfScoreCalculator extends Application {
         projectGridPane.add(projectVBox, 0, 2);
         projectGridPane.add(researchVBox, 1, 2);
         projectGridPane.add(innovativeSolutionVBox, 2, 2);
-        projectGridPane.add(presentationVBox, 3, 2);       
-        
+        projectGridPane.add(presentationVBox, 3, 2);
+
         coreValuesGridPane = new GridPane();
         coreValuesVBox = new RankingVBox("");
         inspirationVBox = new RankingVBox("Inspiration");
@@ -141,45 +143,49 @@ public class GolfScoreCalculator extends Application {
         coreValuesGridPane.add(inspirationVBox, 1, 2);
         coreValuesGridPane.add(teamworkVBox, 2, 2);
         coreValuesGridPane.add(graciousProfessionalismVBox, 3, 2);
-        
+
         updateRankingVBoxVisibility();
-        
+
         HBox rankingHBox = new HBox();
         rankingHBox.getChildren().addAll(robotDesignGridPane, projectGridPane, coreValuesGridPane);
-        
+
         CommandButtonHandler commandButtonHandler = new CommandButtonHandler();
         HBox commandHBox = new HBox();
         Button calculateButton = new Button("Calculate");
         calculateButton.setOnAction(commandButtonHandler);
+        Button saveButton = new Button("Save");
+        saveButton.setOnAction(commandButtonHandler);
+        Button loadButton = new Button("Load");
+        loadButton.setOnAction(commandButtonHandler);
         Button exitButton = new Button("Exit");
         exitButton.setOnAction(commandButtonHandler);
         commandHBox.getChildren().addAll(calculateButton, exitButton);
-        
+
         BorderPane root = new BorderPane();
         root.setCenter(rankingHBox);
         root.setBottom(commandHBox);
-        
+
         Scene scene = new Scene(root, 300, 250);
-        
+
         primaryStage.setTitle("Golf Score Calculator");
         primaryStage.setScene(scene);
         primaryStage.show();
     }
-    
+
     public void updateRankingVBoxVisibility() {
-        if(robotDesignOverallRadioButton.isSelected()) {
+        if (robotDesignOverallRadioButton.isSelected()) {
             robotDesignVBox.setVisible(true);
             mechanicalDesignVBox.setVisible(false);
             softwareVBox.setVisible(false);
             strategyAndInnovationVBox.setVisible(false);
-        }else {
+        } else {
             robotDesignVBox.setVisible(false);
             mechanicalDesignVBox.setVisible(true);
             softwareVBox.setVisible(true);
             strategyAndInnovationVBox.setVisible(true);
         }
-        
-        if(projectOverallRadioButton.isSelected()) {
+
+        if (projectOverallRadioButton.isSelected()) {
             projectVBox.setVisible(true);
             researchVBox.setVisible(false);
             innovativeSolutionVBox.setVisible(false);
@@ -190,8 +196,8 @@ public class GolfScoreCalculator extends Application {
             innovativeSolutionVBox.setVisible(true);
             presentationVBox.setVisible(true);
         }
-        
-        if(coreValuesOverallRadioButton.isSelected()) {
+
+        if (coreValuesOverallRadioButton.isSelected()) {
             coreValuesVBox.setVisible(true);
             inspirationVBox.setVisible(false);
             teamworkVBox.setVisible(false);
@@ -212,11 +218,11 @@ public class GolfScoreCalculator extends Application {
         readTeams(args[0]);
         launch(args);
     }
-    
+
     private static void readTeams(String filename) {
         try {
             Scanner reader = new Scanner(new File(filename));
-            while(reader.hasNext()) {
+            while (reader.hasNext()) {
                 Team newTeam = new Team(Integer.parseInt(reader.nextLine().trim()));
                 teams.add(newTeam);
             }
@@ -226,61 +232,92 @@ public class GolfScoreCalculator extends Application {
         }
     }
     
-    private class ToggleHandler implements ChangeListener<Toggle> {
+    public String printRankings() {
+        return "";
+    }
+    
+    public void loadRankings() {
         
+    }
+
+    private class ToggleHandler implements ChangeListener<Toggle> {
+
         @Override
         public void changed(ObservableValue<? extends Toggle> observable, Toggle oldValue, Toggle newValue) {
             updateRankingVBoxVisibility();
         }
-        
+
     }
-    
+
     private class CommandButtonHandler implements EventHandler<ActionEvent> {
 
         @Override
         public void handle(ActionEvent event) {
             Button pressed = (Button) event.getSource();
-            if(pressed.getText().equals("Calculate")) {
+            if (pressed.getText().equals("Calculate")) {
                 calculateRobotDesign();
                 calculateProject();
                 calculateCoreValues();
                 Collections.sort(teams);
                 ResultsView resultsView = new ResultsView(teams);
-            } else if(pressed.getText().equals("Exit")) {
+            } else if (pressed.getText().equals("Save")) {
+                FileChooser fileChooser = new FileChooser();
+
+                File selectedFile = fileChooser.showSaveDialog(null);
+                if(selectedFile != null) {
+                    try {
+                        PrintWriter printWriter = new PrintWriter(selectedFile);
+                        printWriter.print(printRankings());
+                    } catch (FileNotFoundException ex) {
+                        Logger.getLogger(GolfScoreCalculator.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                } else {
+                    System.err.println("Save file selection cancelled");
+                }
+            } else if (pressed.getText().equals("Load")) {
+                FileChooser fileChooser = new FileChooser();
+                
+                File selectedFile = fileChooser.showOpenDialog(null);
+                if(selectedFile != null) {
+                    loadRankings(selectedFile);
+                } else {
+                    System.err.println("Load file selection cancelled");
+                }
+            } else if (pressed.getText().equals("Exit")) {
                 System.exit(0);
             }
         }
-        
+
         private void calculateRobotDesign() {
-            if(robotDesignOverallRadioButton.isSelected()) {
-                for(int i = 0; i < teams.size(); i++) {
+            if (robotDesignOverallRadioButton.isSelected()) {
+                for (int i = 0; i < teams.size(); i++) {
                     int rank = findTeamRank(teams.get(i), robotDesignVBox);
-                    if(rank < 0) {
+                    if (rank < 0) {
                         teams.get(i).addScore(robotDesignVBox.getNumTeamFields() * 3);
                     } else {
                         teams.get(i).addScore(rank * 3);
                     }
                 }
             } else {
-                for(int i = 0; i < teams.size(); i++) {
+                for (int i = 0; i < teams.size(); i++) {
                     int rank = findTeamRank(teams.get(i), mechanicalDesignVBox);
-                    if(rank < 0) {
+                    if (rank < 0) {
                         teams.get(i).addScore(mechanicalDesignVBox.getNumTeamFields());
                     } else {
                         teams.get(i).addScore(rank);
                     }
                 }
-                for(int i = 0; i < teams.size(); i++) {
+                for (int i = 0; i < teams.size(); i++) {
                     int rank = findTeamRank(teams.get(i), softwareVBox);
-                    if(rank < 0) {
+                    if (rank < 0) {
                         teams.get(i).addScore(softwareVBox.getNumTeamFields());
                     } else {
                         teams.get(i).addScore(rank);
                     }
                 }
-                for(int i = 0; i < teams.size(); i++) {
+                for (int i = 0; i < teams.size(); i++) {
                     int rank = findTeamRank(teams.get(i), strategyAndInnovationVBox);
-                    if(rank < 0) {
+                    if (rank < 0) {
                         teams.get(i).addScore(strategyAndInnovationVBox.getNumTeamFields());
                     } else {
                         teams.get(i).addScore(rank);
@@ -288,37 +325,37 @@ public class GolfScoreCalculator extends Application {
                 }
             }
         }
-        
+
         private void calculateProject() {
-            if(projectOverallRadioButton.isSelected()) {
-                for(int i = 0; i < teams.size(); i++) {
+            if (projectOverallRadioButton.isSelected()) {
+                for (int i = 0; i < teams.size(); i++) {
                     int rank = findTeamRank(teams.get(i), projectVBox);
-                    if(rank < 0) {
+                    if (rank < 0) {
                         teams.get(i).addScore(projectVBox.getNumTeamFields() * 3);
                     } else {
                         teams.get(i).addScore(rank * 3);
                     }
                 }
             } else {
-                for(int i = 0; i < teams.size(); i++) {
+                for (int i = 0; i < teams.size(); i++) {
                     int rank = findTeamRank(teams.get(i), researchVBox);
-                    if(rank < 0) {
+                    if (rank < 0) {
                         teams.get(i).addScore(researchVBox.getNumTeamFields());
                     } else {
                         teams.get(i).addScore(rank);
                     }
                 }
-                for(int i = 0; i < teams.size(); i++) {
+                for (int i = 0; i < teams.size(); i++) {
                     int rank = findTeamRank(teams.get(i), innovativeSolutionVBox);
-                    if(rank < 0) {
+                    if (rank < 0) {
                         teams.get(i).addScore(innovativeSolutionVBox.getNumTeamFields());
                     } else {
                         teams.get(i).addScore(rank);
                     }
                 }
-                for(int i = 0; i < teams.size(); i++) {
+                for (int i = 0; i < teams.size(); i++) {
                     int rank = findTeamRank(teams.get(i), presentationVBox);
-                    if(rank < 0) {
+                    if (rank < 0) {
                         teams.get(i).addScore(presentationVBox.getNumTeamFields());
                     } else {
                         teams.get(i).addScore(rank);
@@ -326,37 +363,37 @@ public class GolfScoreCalculator extends Application {
                 }
             }
         }
-        
+
         private void calculateCoreValues() {
-            if(coreValuesOverallRadioButton.isSelected()) {
-                for(int i = 0; i < teams.size(); i++) {
+            if (coreValuesOverallRadioButton.isSelected()) {
+                for (int i = 0; i < teams.size(); i++) {
                     int rank = findTeamRank(teams.get(i), coreValuesVBox);
-                    if(rank < 0) {
+                    if (rank < 0) {
                         teams.get(i).addScore(coreValuesVBox.getNumTeamFields() * 3);
                     } else {
                         teams.get(i).addScore(rank * 3);
                     }
                 }
             } else {
-                for(int i = 0; i < teams.size(); i++) {
+                for (int i = 0; i < teams.size(); i++) {
                     int rank = findTeamRank(teams.get(i), inspirationVBox);
-                    if(rank < 0) {
+                    if (rank < 0) {
                         teams.get(i).addScore(inspirationVBox.getNumTeamFields());
                     } else {
                         teams.get(i).addScore(rank);
                     }
                 }
-                for(int i = 0; i < teams.size(); i++) {
+                for (int i = 0; i < teams.size(); i++) {
                     int rank = findTeamRank(teams.get(i), teamworkVBox);
-                    if(rank < 0) {
+                    if (rank < 0) {
                         teams.get(i).addScore(teamworkVBox.getNumTeamFields());
                     } else {
                         teams.get(i).addScore(rank);
                     }
                 }
-                for(int i = 0; i < teams.size(); i++) {
+                for (int i = 0; i < teams.size(); i++) {
                     int rank = findTeamRank(teams.get(i), graciousProfessionalismVBox);
-                    if(rank < 0) {
+                    if (rank < 0) {
                         teams.get(i).addScore(graciousProfessionalismVBox.getNumTeamFields());
                     } else {
                         teams.get(i).addScore(rank);
@@ -364,10 +401,10 @@ public class GolfScoreCalculator extends Application {
                 }
             }
         }
-        
+
         private int findTeamRank(Team team, RankingVBox rankingVBox) {
-            for(int i = 0; i < rankingVBox.getNumTeamFields(); i++) {
-                if(team.getTeamNumber() == Integer.parseInt(rankingVBox.getTeamField(i).getText().trim())) {
+            for (int i = 0; i < rankingVBox.getNumTeamFields(); i++) {
+                if (team.getTeamNumber() == Integer.parseInt(rankingVBox.getTeamField(i).getText().trim())) {
                     return i;
                 }
             }
