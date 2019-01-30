@@ -236,7 +236,7 @@ public class GolfScoreCalculator extends Application {
         return "";
     }
     
-    public void loadRankings() {
+    public void loadRankings(File inputFile) {
         
     }
 
