@@ -291,6 +291,7 @@ public class GolfScoreCalculator extends Application {
             
             int robotDesignCols = Integer.parseInt(reader.nextLine().trim());
             if(robotDesignCols == 0) {
+                robotDesignOverallRadioButton.setSelected(true);
                 int robotDesignNumTeams = Integer.parseInt(reader.nextLine().trim());
                 robotDesignVBox.setNumTeamFields(robotDesignNumTeams);
                 String[] robotDesignTeams = reader.nextLine().split(",");
@@ -298,6 +299,7 @@ public class GolfScoreCalculator extends Application {
                     robotDesignVBox.getTeamField(i).setText(robotDesignTeams[i].trim());
                 }
             } else {
+                robotDesignCategoryRadioButton.setSelected(true);
                 String[] robotDesignNumTeamsLine = reader.nextLine().split(",");
                 int mechanicalDesignNumTeams = Integer.parseInt(robotDesignNumTeamsLine[0].trim());
                 int programmingNumTeams = Integer.parseInt(robotDesignNumTeamsLine[1].trim());
@@ -321,6 +323,7 @@ public class GolfScoreCalculator extends Application {
             
             int projectCols = Integer.parseInt(reader.nextLine().trim());
             if(projectCols == 0) {
+                projectOverallRadioButton.setSelected(true);
                 int projectNumTeams = Integer.parseInt(reader.nextLine().trim());
                 projectVBox.setNumTeamFields(projectNumTeams);
                 String[] projectTeams = reader.nextLine().split(",");
@@ -328,6 +331,7 @@ public class GolfScoreCalculator extends Application {
                     projectVBox.getTeamField(i).setText(projectTeams[i].trim());
                 }
             } else {
+                projectCategoryRadioButton.setSelected(true);
                 String[] projectNumTeamsLine = reader.nextLine().split(",");
                 int researchNumTeams = Integer.parseInt(projectNumTeamsLine[0].trim());
                 int innovativeSolutionNumTeams = Integer.parseInt(projectNumTeamsLine[1].trim());
@@ -351,6 +355,7 @@ public class GolfScoreCalculator extends Application {
             
             int coreValuesCols = Integer.parseInt(reader.nextLine().trim());
             if(coreValuesCols == 0) {
+                coreValuesOverallRadioButton.setSelected(true);
                 int coreValuesNumTeams = Integer.parseInt(reader.nextLine().trim());
                 coreValuesVBox.setNumTeamFields(coreValuesNumTeams);
                 String[] coreValuesTeams = reader.nextLine().split(",");
@@ -358,6 +363,7 @@ public class GolfScoreCalculator extends Application {
                     coreValuesVBox.getTeamField(i).setText(coreValuesTeams[i].trim());
                 }
             } else {
+                coreValuesCategoryRadioButton.setSelected(true);
                 String[] coreValuesNumTeamsLine = reader.nextLine().split(",");
                 int inspirationNumTeams = Integer.parseInt(coreValuesNumTeamsLine[0].trim());
                 int teamworkNumTeams = Integer.parseInt(coreValuesNumTeamsLine[1].trim());
