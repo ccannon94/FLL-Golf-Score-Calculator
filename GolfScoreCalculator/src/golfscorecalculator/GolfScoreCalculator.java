@@ -39,7 +39,7 @@ public class GolfScoreCalculator extends Application {
     private GridPane robotDesignGridPane;
     private RankingVBox robotDesignVBox;
     private RankingVBox mechanicalDesignVBox;
-    private RankingVBox softwareVBox;
+    private RankingVBox programmingVBox;
     private RankingVBox strategyAndInnovationVBox;
     private Label robotDesignLabel;
     private HBox robotDesignRadioButtonHBox;
@@ -78,7 +78,7 @@ public class GolfScoreCalculator extends Application {
         robotDesignGridPane = new GridPane();
         robotDesignVBox = new RankingVBox("");
         mechanicalDesignVBox = new RankingVBox("Mechanical Deign");
-        softwareVBox = new RankingVBox("Software");
+        programmingVBox = new RankingVBox("Programming");
         strategyAndInnovationVBox = new RankingVBox("Strategy & Innovation");
         robotDesignLabel = new Label("Robot Design");
         robotDesignRadioButtonHBox = new HBox();
@@ -95,7 +95,7 @@ public class GolfScoreCalculator extends Application {
         robotDesignGridPane.add(robotDesignRadioButtonHBox, 0, 1);
         robotDesignGridPane.add(robotDesignVBox, 0, 2);
         robotDesignGridPane.add(mechanicalDesignVBox, 1, 2);
-        robotDesignGridPane.add(softwareVBox, 2, 2);
+        robotDesignGridPane.add(programmingVBox, 2, 2);
         robotDesignGridPane.add(strategyAndInnovationVBox, 3, 2);
 
         projectGridPane = new GridPane();
@@ -159,7 +159,7 @@ public class GolfScoreCalculator extends Application {
         loadButton.setOnAction(commandButtonHandler);
         Button exitButton = new Button("Exit");
         exitButton.setOnAction(commandButtonHandler);
-        commandHBox.getChildren().addAll(calculateButton, exitButton);
+        commandHBox.getChildren().addAll(calculateButton, saveButton, loadButton, exitButton);
 
         BorderPane root = new BorderPane();
         root.setCenter(rankingHBox);
@@ -176,12 +176,12 @@ public class GolfScoreCalculator extends Application {
         if (robotDesignOverallRadioButton.isSelected()) {
             robotDesignVBox.setVisible(true);
             mechanicalDesignVBox.setVisible(false);
-            softwareVBox.setVisible(false);
+            programmingVBox.setVisible(false);
             strategyAndInnovationVBox.setVisible(false);
         } else {
             robotDesignVBox.setVisible(false);
             mechanicalDesignVBox.setVisible(true);
-            softwareVBox.setVisible(true);
+            programmingVBox.setVisible(true);
             strategyAndInnovationVBox.setVisible(true);
         }
 
@@ -215,7 +215,9 @@ public class GolfScoreCalculator extends Application {
      */
     public static void main(String[] args) {
         teams = new ArrayList<>();
-        readTeams(args[0]);
+        if(args[0] != null) {
+            readTeams(args[0]);
+        }
         launch(args);
     }
 
@@ -233,11 +235,125 @@ public class GolfScoreCalculator extends Application {
     }
     
     public String printRankings() {
-        return "";
+        String outputString = "";
+        
+        if(robotDesignVBox.isVisible()) {
+            outputString += "0";
+            outputString += System.lineSeparator() + robotDesignVBox.getNumTeamFields();
+            outputString += System.lineSeparator() + robotDesignVBox.toString();
+        } else {
+            outputString += "1";
+            outputString += System.lineSeparator() + String.format("%d,%d,%d",
+                    mechanicalDesignVBox.getNumTeamFields(),
+                    programmingVBox.getNumTeamFields(),
+                    strategyAndInnovationVBox.getNumTeamFields());
+            outputString += System.lineSeparator() + mechanicalDesignVBox.toString()
+                    + System.lineSeparator() + programmingVBox.toString()
+                    + System.lineSeparator() + strategyAndInnovationVBox.toString();
+        }
+        
+        if(projectVBox.isVisible()) {
+            outputString += System.lineSeparator() + "0";
+            outputString += System.lineSeparator() + projectVBox.getNumTeamFields();
+            outputString += System.lineSeparator() + projectVBox.toString();
+        } else {
+            outputString += System.lineSeparator() + "1";
+            outputString += System.lineSeparator() + String.format("%d,%d,%d",
+                    researchVBox.getNumTeamFields(),
+                    innovativeSolutionVBox.getNumTeamFields(),
+                    presentationVBox.getNumTeamFields());
+            outputString += System.lineSeparator() + researchVBox.toString()
+                    + System.lineSeparator() + innovativeSolutionVBox.toString()
+                    + System.lineSeparator() + presentationVBox.toString();
+        }
+        
+        if(coreValuesVBox.isVisible()) {
+            outputString += System.lineSeparator() + "0";
+            outputString += System.lineSeparator() + coreValuesVBox.getNumTeamFields();
+            outputString += System.lineSeparator() + coreValuesVBox.toString();
+        } else {
+            outputString += System.lineSeparator() + "1";
+            outputString += System.lineSeparator() + String.format("%d,%d,%d", 
+                    inspirationVBox.getNumTeamFields(), 
+                    teamworkVBox.getNumTeamFields(), 
+                    graciousProfessionalismVBox.getNumTeamFields());
+            outputString += System.lineSeparator() + inspirationVBox.toString()
+                    + System.lineSeparator() + teamworkVBox.toString()
+                    + System.lineSeparator() + graciousProfessionalismVBox.toString();
+        }
+        
+        return outputString;
     }
     
     public void loadRankings(File inputFile) {
-        
+        try {
+            Scanner reader = new Scanner(inputFile);
+            
+            int robotDesignCols = Integer.parseInt(reader.nextLine().trim());
+            if(robotDesignCols == 0) {
+                int robotDesignNumTeams = Integer.parseInt(reader.nextLine().trim());
+                robotDesignVBox.setNumTeamFields(robotDesignNumTeams);
+                String[] robotDesignTeams = reader.nextLine().split(",");
+                for(int i = 0; i < robotDesignNumTeams; i++) {
+                    robotDesignVBox.getTeamField(i).setText(robotDesignTeams[i].trim());
+                }
+            } else {
+                String[] robotDesignNumTeamsLine = reader.nextLine().split(",");
+                int mechanicalDesignNumTeams = Integer.parseInt(robotDesignNumTeamsLine[0].trim());
+                int programmingNumTeams = Integer.parseInt(robotDesignNumTeamsLine[1].trim());
+                int strategyAndInnovationNumTeams = Integer.parseInt(robotDesignNumTeamsLine[2].trim());
+                mechanicalDesignVBox.setNumTeamFields(mechanicalDesignNumTeams);
+                String[] mechanicalDesignTeams = reader.nextLine().split(",");
+                programmingVBox.setNumTeamFields(programmingNumTeams);
+                String[] programmingTeams = reader.nextLine().split(",");
+                strategyAndInnovationVBox.setNumTeamFields(strategyAndInnovationNumTeams);
+                String[] strategyAndInnovationTeams = reader.nextLine().split(",");
+                for(int i = 0; i < mechanicalDesignNumTeams; i++) {
+                    mechanicalDesignVBox.getTeamField(i).setText(mechanicalDesignTeams[i].trim());
+                }
+                for(int i = 0; i < programmingNumTeams; i++) {
+                    programmingVBox.getTeamField(i).setText(programmingTeams[i].trim());
+                }
+                for(int i = 0; i < strategyAndInnovationNumTeams; i++) {
+                    strategyAndInnovationVBox.getTeamField(i).setText(strategyAndInnovationTeams[i].trim());
+                }
+            }
+            
+            int projectCols = Integer.parseInt(reader.nextLine().trim());
+            if(projectCols == 0) {
+                int projectNumTeams = Integer.parseInt(reader.nextLine().trim());
+                projectVBox.setNumTeamFields(projectNumTeams);
+                String[] projectTeams = reader.nextLine().split(",");
+                for(int i = 0; i < projectNumTeams; i++) {
+                    projectVBox.getTeamField(i).setText(projectTeams[i].trim());
+                }
+            } else {
+                String[] projectNumTeamsLine = reader.nextLine().split(",");
+                int researchNumTeams = Integer.parseInt(projectNumTeamsLine[0].trim());
+                int innovativeSolutionNumTeams = Integer.parseInt(projectNumTeamsLine[1].trim());
+                int presentationNumTeams = Integer.parseInt(projectNumTeamsLine[2].trim());
+                researchVBox.setNumTeamFields(researchNumTeams);
+                String[] researchTeams = reader.nextLine().split(",");
+                innovativeSolutionVBox.setNumTeamFields(innovativeSolutionNumTeams);
+                String[] innovativeSolutionTeams = reader.nextLine().split(",");
+                presentationVBox.setNumTeamFields(presentationNumTeams);
+                String[] presentationTeams = reader.nextLine().split(",");
+                for(int i = 0; i < researchNumTeams; i++) {
+                    researchVBox.getTeamField(i).setText(researchTeams[i].trim());
+                }
+                for(int i = 0; i < innovativeSolutionNumTeams; i++) {
+                    innovativeSolutionVBox.getTeamField(i).setText(innovativeSolutionTeams[i].trim());
+                }
+                for(int i = 0; i < presentationNumTeams; i++) {
+                    presentationVBox.getTeamField(i).setText(presentationTeams[i].trim());
+                }
+            }
+            
+            
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(GolfScoreCalculator.class.getName()).log(Level.SEVERE, null, ex);
+            System.err.println("Selected input file could not be loaded");
+        }
     }
 
     private class ToggleHandler implements ChangeListener<Toggle> {
@@ -268,6 +384,7 @@ public class GolfScoreCalculator extends Application {
                     try {
                         PrintWriter printWriter = new PrintWriter(selectedFile);
                         printWriter.print(printRankings());
+                        printWriter.close();
                     } catch (FileNotFoundException ex) {
                         Logger.getLogger(GolfScoreCalculator.class.getName()).log(Level.SEVERE, null, ex);
                     }
@@ -308,9 +425,9 @@ public class GolfScoreCalculator extends Application {
                     }
                 }
                 for (int i = 0; i < teams.size(); i++) {
-                    int rank = findTeamRank(teams.get(i), softwareVBox);
+                    int rank = findTeamRank(teams.get(i), programmingVBox);
                     if (rank < 0) {
-                        teams.get(i).addScore(softwareVBox.getNumTeamFields());
+                        teams.get(i).addScore(programmingVBox.getNumTeamFields());
                     } else {
                         teams.get(i).addScore(rank);
                     }
