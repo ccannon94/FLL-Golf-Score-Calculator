@@ -349,6 +349,35 @@ public class GolfScoreCalculator extends Application {
                 }
             }
             
+            int coreValuesCols = Integer.parseInt(reader.nextLine().trim());
+            if(coreValuesCols == 0) {
+                int coreValuesNumTeams = Integer.parseInt(reader.nextLine().trim());
+                coreValuesVBox.setNumTeamFields(coreValuesNumTeams);
+                String[] coreValuesTeams = reader.nextLine().split(",");
+                for(int i = 0; i < coreValuesNumTeams; i++) {
+                    coreValuesVBox.getTeamField(i).setText(coreValuesTeams[i].trim());
+                }
+            } else {
+                String[] coreValuesNumTeamsLine = reader.nextLine().split(",");
+                int inspirationNumTeams = Integer.parseInt(coreValuesNumTeamsLine[0].trim());
+                int teamworkNumTeams = Integer.parseInt(coreValuesNumTeamsLine[1].trim());
+                int graciousProfessionalismNumTeams = Integer.parseInt(coreValuesNumTeamsLine[2].trim());
+                inspirationVBox.setNumTeamFields(inspirationNumTeams);
+                String[] inspirationTeams = reader.nextLine().split(",");
+                teamworkVBox.setNumTeamFields(teamworkNumTeams);
+                String[] teamworkTeams = reader.nextLine().split(",");
+                graciousProfessionalismVBox.setNumTeamFields(graciousProfessionalismNumTeams);
+                String[] graciousProfessionalismTeams = reader.nextLine().split(",");
+                for(int i = 0; i < inspirationNumTeams; i++) {
+                    inspirationVBox.getTeamField(i).setText(inspirationTeams[i].trim());
+                }
+                for(int i = 0; i < teamworkNumTeams; i++) {
+                    teamworkVBox.getTeamField(i).setText(teamworkTeams[i].trim());
+                }
+                for(int i = 0; i < graciousProfessionalismNumTeams; i++) {
+                    graciousProfessionalismVBox.getTeamField(i).setText(graciousProfessionalismTeams[i].trim());
+                }
+            }
             
         } catch (FileNotFoundException ex) {
             Logger.getLogger(GolfScoreCalculator.class.getName()).log(Level.SEVERE, null, ex);
