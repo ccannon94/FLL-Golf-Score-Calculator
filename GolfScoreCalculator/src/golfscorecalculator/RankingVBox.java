@@ -12,7 +12,6 @@ import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.input.InputMethodEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 
@@ -63,6 +62,30 @@ public class RankingVBox extends VBox {
     
     public TextField getTeamField(int index) {
         return teamFields.get(index);
+    }
+    
+    public void setNumTeamFields(int numFields) {
+        teamFields.clear();
+        teamGridPane.getChildren().clear();
+        for(int i = 0; i < numFields; i ++) {
+            TextField newTextField = new TextField();
+            teamGridPane.add(newTextField, 0, i);
+            teamFields.add(newTextField);
+        }
+    }
+    
+    public String toString() {
+        String outputString = "";
+        
+        for(int i = 0; i < teamFields.size(); i++) {
+            if(i < teamFields.size() - 1) {
+                outputString += teamFields.get(i).getText() + ",";
+            } else {
+                outputString += teamFields.get(i).getText();
+            }
+        }
+        
+        return outputString;
     }
     
     private class ButtonHandler implements EventHandler<ActionEvent> {
