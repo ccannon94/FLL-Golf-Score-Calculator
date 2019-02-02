@@ -406,6 +406,9 @@ public class GolfScoreCalculator extends Application {
         public void handle(ActionEvent event) {
             Button pressed = (Button) event.getSource();
             if (pressed.getText().equals("Calculate")) {
+                for(Team team : teams) {
+                    team.setScore(0);
+                }
                 calculateRobotDesign();
                 calculateProject();
                 calculateCoreValues();
