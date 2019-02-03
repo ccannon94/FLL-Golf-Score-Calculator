@@ -24,6 +24,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -77,7 +78,7 @@ public class GolfScoreCalculator extends Application {
 
         robotDesignGridPane = new GridPane();
         robotDesignVBox = new RankingVBox("");
-        mechanicalDesignVBox = new RankingVBox("Mechanical Deign");
+        mechanicalDesignVBox = new RankingVBox("Mechanical Design");
         programmingVBox = new RankingVBox("Programming");
         strategyAndInnovationVBox = new RankingVBox("Strategy & Innovation");
         robotDesignLabel = new Label("Robot Design");
